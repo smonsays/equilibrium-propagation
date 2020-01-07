@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>equilibrium-propagation.run_energy_model_mnist API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>equilibrium-propagation.run_energy_model_mnist</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python"># TODO: Add learning rate as user argument
+import argparse
+import json
+import logging
+import sys
+
+import torch
+
+from lib import config, data, energy, train, utils
+
+
+def load_default_config(energy):
+    &#34;&#34;&#34;
+    Load default parameter configuration from file.
+
+    Args:
+        tasks: String with the energy name
+
+    Returns:
+        Dictionary of default parameters for the given energy
+    &#34;&#34;&#34;
+    if energy == &#34;restr_hopfield&#34;:
+        default_config = &#34;etc/energy_restr_hopfield.json&#34;
+    elif energy == &#34;cond_gaussian&#34;:
+        default_config = &#34;etc/energy_cond_gaussian.json&#34;
+    else:
+        raise ValueError(&#34;Energy based model \&#34;{}\&#34; not defined.&#34;.format(energy))
+
+    with open(default_config) as config_json_file:
+        cfg = json.load(config_json_file)
+
+    return cfg
+
+
+def parse_shell_args(args):
+    &#34;&#34;&#34;
+    Parse shell arguments for this script.
+
+    Args:
+        args: List of shell arguments
+
+    Returns:
+        Dictionary of shell arguments
+    &#34;&#34;&#34;
+    parser = argparse.ArgumentParser(
+        description=&#34;Train an energy-based model on MNIST using Equilibrium Propagation&#34;
+    )
+
+    parser.add_argument(&#34;--batch_size&#34;, type=int, default=argparse.SUPPRESS,
+                        help=&#34;Size of mini batches during training.&#34;)
+    parser.add_argument(&#34;--c_energy&#34;, choices=[&#34;cross_entropy&#34;, &#34;squared_error&#34;],
+                        default=argparse.SUPPRESS, help=&#34;Supervised learning cost function.&#34;)
+    parser.add_argument(&#34;--dimensions&#34;, type=int, nargs=&#34;+&#34;,
+                        default=argparse.SUPPRESS, help=&#34;Dimensions of the neural network.&#34;)
+    parser.add_argument(&#34;--energy&#34;, choices=[&#34;cond_gaussian&#34;, &#34;restr_hopfield&#34;],
+                        default=&#34;cond_gaussian&#34;, help=&#34;Type of energy-based model.&#34;)
+    parser.add_argument(&#34;--epochs&#34;, type=int, default=argparse.SUPPRESS,
+                        help=&#34;Number of epochs to train.&#34;)
+    parser.add_argument(&#34;--fast_ff_init&#34;, action=&#39;store_true&#39;, default=argparse.SUPPRESS,
+                        help=&#34;Flag to enable fast feedforward initialization.&#34;)
+    parser.add_argument(&#34;--learning_rate&#34;, type=float, default=argparse.SUPPRESS,
+                        help=&#34;Learning rate of the optimizer.&#34;)
+    parser.add_argument(&#34;--log_dir&#34;, type=str, default=&#34;&#34;,
+                        help=&#34;Subdirectory within ./log/ to store logs.&#34;)
+    parser.add_argument(&#34;--nonlinearity&#34;, choices=[&#34;leaky_relu&#34;, &#34;relu&#34;, &#34;sigmoid&#34;, &#34;tanh&#34;],
+                        default=argparse.SUPPRESS, help=&#34;Nonlinearity between network layers.&#34;)
+    parser.add_argument(&#34;--optimizer&#34;, choices=[&#34;adam&#34;, &#34;adagrad&#34;, &#34;sgd&#34;],
+                        default=argparse.SUPPRESS, help=&#34;Optimizer used to train the model.&#34;)
+    parser.add_argument(&#34;--seed&#34;, type=int, default=argparse.SUPPRESS,
+                        help=&#34;Random seed for pytorch&#34;)
+
+    return vars(parser.parse_args(args))
+
+
+def run_energy_model_mnist(cfg):
+    &#34;&#34;&#34;
+    Main script.
+
+    Args:
+        cfg: Dictionary defining parameters of the run
+    &#34;&#34;&#34;
+    # Initialize seed if specified (might slow down the model)
+    if cfg[&#39;seed&#39;] is not None:
+        torch.manual_seed(cfg[&#39;seed&#39;])
+
+    # Create the cost function to be optimized by the model
+    c_energy = utils.create_cost(cfg[&#39;c_energy&#39;], cfg[&#39;beta&#39;])
+
+    # Create activation functions for every layer as a list
+    phi = utils.create_activations(cfg[&#39;nonlinearity&#39;], len(cfg[&#39;dimensions&#39;]))
+
+    # Initialize energy based model
+    if cfg[&#34;energy&#34;] == &#34;restr_hopfield&#34;:
+        model = energy.RestrictedHopfield(
+            cfg[&#39;dimensions&#39;], c_energy, cfg[&#39;batch_size&#39;], phi).to(config.device)
+    elif cfg[&#34;energy&#34;] == &#34;cond_gaussian&#34;:
+        model = energy.ConditionalGaussian(
+            cfg[&#39;dimensions&#39;], c_energy, cfg[&#39;batch_size&#39;], phi).to(config.device)
+    else:
+        raise ValueError(f&#39;Energy based model \&#34;{cfg[&#34;energy&#34;]}\&#34; not defined.&#39;)
+
+    # Define optimizer (may include l2 regularization via weight_decay)
+    w_optimizer = utils.create_optimizer(model, cfg[&#39;optimizer&#39;],  lr=cfg[&#39;learning_rate&#39;])
+
+    # Create torch data loaders with the MNIST data set
+    mnist_train, mnist_test = data.create_mnist_loaders(cfg[&#39;batch_size&#39;])
+
+    logging.info(&#34;Start training with parametrization:\n{}&#34;.format(
+        json.dumps(cfg, indent=4, sort_keys=True)))
+
+    for epoch in range(1, cfg[&#39;epochs&#39;] + 1):
+        # Training
+        train.train(model, mnist_train, cfg[&#39;dynamics&#39;], w_optimizer, cfg[&#34;fast_ff_init&#34;])
+
+        # Testing
+        test_acc, test_energy = train.test(model, mnist_test, cfg[&#39;dynamics&#39;], cfg[&#34;fast_ff_init&#34;])
+
+        # Logging
+        logging.info(
+            &#34;epoch: {} \t test_acc: {:.4f} \t mean_E: {:.4f}&#34;.format(
+                epoch, test_acc, test_energy)
+        )
+
+
+if __name__ == &#39;__main__&#39;:
+    # Parse shell arguments as input configuration
+    user_config = parse_shell_args(sys.argv[1:])
+
+    # Load default parameter configuration from file for the specified energy-based model
+    cfg = load_default_config(user_config[&#34;energy&#34;])
+
+    # Overwrite default parameters with user configuration where applicable
+    cfg.update(user_config)
+
+    # Setup global logger and logging directory
+    config.setup_logging(cfg[&#34;energy&#34;] + &#34;_&#34; + cfg[&#34;dataset&#34;], dir=cfg[&#39;log_dir&#39;])
+
+    # Run the script using the created paramter configuration
+    run_energy_model_mnist(cfg)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="equilibrium-propagation.run_energy_model_mnist.load_default_config"><code class="name flex">
+<span>def <span class="ident">load_default_config</span></span>(<span>energy)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Load default parameter configuration from file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tasks</code></strong></dt>
+<dd>String with the energy name</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dictionary</code> of default <code>parameters</code> <code>for</code> <code>the</code> <code>given</code> <code>energy</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_default_config(energy):
+    &#34;&#34;&#34;
+    Load default parameter configuration from file.
+
+    Args:
+        tasks: String with the energy name
+
+    Returns:
+        Dictionary of default parameters for the given energy
+    &#34;&#34;&#34;
+    if energy == &#34;restr_hopfield&#34;:
+        default_config = &#34;etc/energy_restr_hopfield.json&#34;
+    elif energy == &#34;cond_gaussian&#34;:
+        default_config = &#34;etc/energy_cond_gaussian.json&#34;
+    else:
+        raise ValueError(&#34;Energy based model \&#34;{}\&#34; not defined.&#34;.format(energy))
+
+    with open(default_config) as config_json_file:
+        cfg = json.load(config_json_file)
+
+    return cfg</code></pre>
+</details>
+</dd>
+<dt id="equilibrium-propagation.run_energy_model_mnist.parse_shell_args"><code class="name flex">
+<span>def <span class="ident">parse_shell_args</span></span>(<span>args)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Parse shell arguments for this script.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>args</code></strong></dt>
+<dd>List of shell arguments</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dictionary</code> of <code>shell</code> <code>arguments</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_shell_args(args):
+    &#34;&#34;&#34;
+    Parse shell arguments for this script.
+
+    Args:
+        args: List of shell arguments
+
+    Returns:
+        Dictionary of shell arguments
+    &#34;&#34;&#34;
+    parser = argparse.ArgumentParser(
+        description=&#34;Train an energy-based model on MNIST using Equilibrium Propagation&#34;
+    )
+
+    parser.add_argument(&#34;--batch_size&#34;, type=int, default=argparse.SUPPRESS,
+                        help=&#34;Size of mini batches during training.&#34;)
+    parser.add_argument(&#34;--c_energy&#34;, choices=[&#34;cross_entropy&#34;, &#34;squared_error&#34;],
+                        default=argparse.SUPPRESS, help=&#34;Supervised learning cost function.&#34;)
+    parser.add_argument(&#34;--dimensions&#34;, type=int, nargs=&#34;+&#34;,
+                        default=argparse.SUPPRESS, help=&#34;Dimensions of the neural network.&#34;)
+    parser.add_argument(&#34;--energy&#34;, choices=[&#34;cond_gaussian&#34;, &#34;restr_hopfield&#34;],
+                        default=&#34;cond_gaussian&#34;, help=&#34;Type of energy-based model.&#34;)
+    parser.add_argument(&#34;--epochs&#34;, type=int, default=argparse.SUPPRESS,
+                        help=&#34;Number of epochs to train.&#34;)
+    parser.add_argument(&#34;--fast_ff_init&#34;, action=&#39;store_true&#39;, default=argparse.SUPPRESS,
+                        help=&#34;Flag to enable fast feedforward initialization.&#34;)
+    parser.add_argument(&#34;--learning_rate&#34;, type=float, default=argparse.SUPPRESS,
+                        help=&#34;Learning rate of the optimizer.&#34;)
+    parser.add_argument(&#34;--log_dir&#34;, type=str, default=&#34;&#34;,
+                        help=&#34;Subdirectory within ./log/ to store logs.&#34;)
+    parser.add_argument(&#34;--nonlinearity&#34;, choices=[&#34;leaky_relu&#34;, &#34;relu&#34;, &#34;sigmoid&#34;, &#34;tanh&#34;],
+                        default=argparse.SUPPRESS, help=&#34;Nonlinearity between network layers.&#34;)
+    parser.add_argument(&#34;--optimizer&#34;, choices=[&#34;adam&#34;, &#34;adagrad&#34;, &#34;sgd&#34;],
+                        default=argparse.SUPPRESS, help=&#34;Optimizer used to train the model.&#34;)
+    parser.add_argument(&#34;--seed&#34;, type=int, default=argparse.SUPPRESS,
+                        help=&#34;Random seed for pytorch&#34;)
+
+    return vars(parser.parse_args(args))</code></pre>
+</details>
+</dd>
+<dt id="equilibrium-propagation.run_energy_model_mnist.run_energy_model_mnist"><code class="name flex">
+<span>def <span class="ident">run_energy_model_mnist</span></span>(<span>cfg)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Main script.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>cfg</code></strong></dt>
+<dd>Dictionary defining parameters of the run</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_energy_model_mnist(cfg):
+    &#34;&#34;&#34;
+    Main script.
+
+    Args:
+        cfg: Dictionary defining parameters of the run
+    &#34;&#34;&#34;
+    # Initialize seed if specified (might slow down the model)
+    if cfg[&#39;seed&#39;] is not None:
+        torch.manual_seed(cfg[&#39;seed&#39;])
+
+    # Create the cost function to be optimized by the model
+    c_energy = utils.create_cost(cfg[&#39;c_energy&#39;], cfg[&#39;beta&#39;])
+
+    # Create activation functions for every layer as a list
+    phi = utils.create_activations(cfg[&#39;nonlinearity&#39;], len(cfg[&#39;dimensions&#39;]))
+
+    # Initialize energy based model
+    if cfg[&#34;energy&#34;] == &#34;restr_hopfield&#34;:
+        model = energy.RestrictedHopfield(
+            cfg[&#39;dimensions&#39;], c_energy, cfg[&#39;batch_size&#39;], phi).to(config.device)
+    elif cfg[&#34;energy&#34;] == &#34;cond_gaussian&#34;:
+        model = energy.ConditionalGaussian(
+            cfg[&#39;dimensions&#39;], c_energy, cfg[&#39;batch_size&#39;], phi).to(config.device)
+    else:
+        raise ValueError(f&#39;Energy based model \&#34;{cfg[&#34;energy&#34;]}\&#34; not defined.&#39;)
+
+    # Define optimizer (may include l2 regularization via weight_decay)
+    w_optimizer = utils.create_optimizer(model, cfg[&#39;optimizer&#39;],  lr=cfg[&#39;learning_rate&#39;])
+
+    # Create torch data loaders with the MNIST data set
+    mnist_train, mnist_test = data.create_mnist_loaders(cfg[&#39;batch_size&#39;])
+
+    logging.info(&#34;Start training with parametrization:\n{}&#34;.format(
+        json.dumps(cfg, indent=4, sort_keys=True)))
+
+    for epoch in range(1, cfg[&#39;epochs&#39;] + 1):
+        # Training
+        train.train(model, mnist_train, cfg[&#39;dynamics&#39;], w_optimizer, cfg[&#34;fast_ff_init&#34;])
+
+        # Testing
+        test_acc, test_energy = train.test(model, mnist_test, cfg[&#39;dynamics&#39;], cfg[&#34;fast_ff_init&#34;])
+
+        # Logging
+        logging.info(
+            &#34;epoch: {} \t test_acc: {:.4f} \t mean_E: {:.4f}&#34;.format(
+                epoch, test_acc, test_energy)
+        )</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="equilibrium-propagation" href="index.html">equilibrium-propagation</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="equilibrium-propagation.run_energy_model_mnist.load_default_config" href="#equilibrium-propagation.run_energy_model_mnist.load_default_config">load_default_config</a></code></li>
+<li><code><a title="equilibrium-propagation.run_energy_model_mnist.parse_shell_args" href="#equilibrium-propagation.run_energy_model_mnist.parse_shell_args">parse_shell_args</a></code></li>
+<li><code><a title="equilibrium-propagation.run_energy_model_mnist.run_energy_model_mnist" href="#equilibrium-propagation.run_energy_model_mnist.run_energy_model_mnist">run_energy_model_mnist</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

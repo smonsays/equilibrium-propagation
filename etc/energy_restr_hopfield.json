@@ -1,0 +1,20 @@
+{
+    "batch_size": 100,
+    "beta": 1,
+    "c_energy": "squared_error",
+    "dataset": "mnist",
+    "dimensions": [784, 1000, 10],
+    "dynamics": {
+        "dt": 0.1,
+        "n_relax": 50,
+        "tau": 1,
+        "tol": 0
+    },
+    "energy": "restr_hopfield",
+    "epochs": 100,
+    "fast_ff_init": false,
+    "learning_rate": 0.001,
+    "nonlinearity": "sigmoid",
+    "optimizer": "adam",
+    "seed": null
+}

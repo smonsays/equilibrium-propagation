@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.2" />
+<title>equilibrium-propagation.lib.train API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>equilibrium-propagation.lib.train</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import logging
+
+import torch
+
+from lib import config
+
+
+def predict_batch(model, x_batch, dynamics, fast_init):
+    &#34;&#34;&#34;
+    Compute the softmax prediction probabilities for a given data batch.
+
+    Args:
+        model: EnergyBasedModel
+        x_batch: Batch of input tensors
+        dynamics: Dictionary containing the keyword arguments
+            for the relaxation dynamics on u
+        fast_init: Boolean to specify if fast feedforward initilization
+            is used for the prediction
+
+    Returns:
+        Softmax classification probabilities for the given data batch
+    &#34;&#34;&#34;
+    # Initialize the neural state variables
+    model.reset_state()
+
+    # Clamp the input to the test sample, and remove nudging from ouput
+    model.clamp_layer(0, x_batch.view(-1, model.dimensions[0]))
+    model.set_C_target(None)
+
+    # Generate the prediction
+    if fast_init:
+        model.fast_init()
+    else:
+        model.u_relax(**dynamics)
+
+    return torch.nn.functional.softmax(model.u[-1].detach(), dim=1)
+
+
+def test(model, test_loader, dynamics, fast_init):
+    &#34;&#34;&#34;
+    Evaluate prediction accuracy of an energy-based model on a given test set.
+
+    Args:
+        model: EnergyBasedModel
+        test_loader: Dataloader containing the test dataset
+        dynamics: Dictionary containing the keyword arguments
+            for the relaxation dynamics on u
+        fast_init: Boolean to specify if fast feedforward initilization
+            is used for the prediction
+
+    Returns:
+        Test accuracy
+        Mean energy of the model per batch
+    &#34;&#34;&#34;
+    test_E, correct, total = 0.0, 0.0, 0.0
+
+    for x_batch, y_batch in test_loader:
+        # Prepare the new batch
+        x_batch, y_batch = x_batch.to(config.device), y_batch.to(config.device)
+
+        # Extract prediction as the output unit with the strongest activity
+        output = predict_batch(model, x_batch, dynamics, fast_init)
+        prediction = torch.argmax(output, 1)
+
+        with torch.no_grad():
+            # Compute test batch accuracy, energy and store number of seen batches
+            correct += float(torch.sum(prediction == y_batch.argmax(dim=1)))
+            test_E += float(torch.sum(model.E))
+            total += x_batch.size(0)
+
+    return correct/total, test_E/total
+
+
+def train(model, train_loader, dynamics, w_optimizer, fast_init):
+    &#34;&#34;&#34;
+    Use equilibrium propagation to train an energy-based model.
+
+    Args:
+        model: EnergyBasedModel
+        train_loader: Dataloader containing the training dataset
+        dynamics: Dictionary containing the keyword arguments
+            for the relaxation dynamics on u
+        w_optimizer: torch.optim.Optimizer object for the model parameters
+        fast_init: Boolean to specify if fast feedforward initilization
+            is used for the prediction
+    &#34;&#34;&#34;
+    for batch_idx, (x_batch, y_batch) in enumerate(train_loader):
+        x_batch, y_batch = x_batch.to(config.device), y_batch.to(config.device)
+
+        # Reinitialize the neural state variables
+        model.reset_state()
+
+        # Clamp the input to the training sample
+        model.clamp_layer(0, x_batch.view(-1, model.dimensions[0]))
+
+        # Free phase
+        if fast_init:
+            # Skip the free phase using fast feed-forward initialization instead
+            model.fast_init()
+            free_grads = [torch.zeros_like(p) for p in model.parameters()]
+        else:
+            # Run free phase until settled to fixed point and collect the free phase derivates
+            model.set_C_target(None)
+            dE = model.u_relax(**dynamics)
+            free_grads = model.w_get_gradients()
+
+        # Run nudged phase until settled to fixed point and collect the nudged phase derivates
+        model.set_C_target(y_batch)
+        dE = model.u_relax(**dynamics)
+        nudged_grads = model.w_get_gradients()
+
+        # Optimize the parameters using the contrastive Hebbian style update
+        model.w_optimize(free_grads, nudged_grads, w_optimizer)
+
+        # Logging key statistics
+        if batch_idx % (len(train_loader)//10) == 0:
+
+            # Extract prediction as the output unit with the strongest activity
+            output = predict_batch(model, x_batch, dynamics, fast_init)
+            prediction = torch.argmax(output, 1)
+
+            # Log energy and batch accuracy
+            batch_acc = float(torch.sum(prediction == y_batch.argmax(dim=1))) / x_batch.size(0)
+            logging.info(&#39;{:.0f}%:\tE: {:.2f}\tdE {:.2f}\tbatch_acc {:.4f}&#39;.format(
+                100. * batch_idx / len(train_loader), torch.mean(model.E), dE, batch_acc))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="equilibrium-propagation.lib.train.predict_batch"><code class="name flex">
+<span>def <span class="ident">predict_batch</span></span>(<span>model, x_batch, dynamics, fast_init)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Compute the softmax prediction probabilities for a given data batch.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong></dt>
+<dd>EnergyBasedModel</dd>
+<dt><strong><code>x_batch</code></strong></dt>
+<dd>Batch of input tensors</dd>
+<dt><strong><code>dynamics</code></strong></dt>
+<dd>Dictionary containing the keyword arguments
+for the relaxation dynamics on u</dd>
+<dt><strong><code>fast_init</code></strong></dt>
+<dd>Boolean to specify if fast feedforward initilization
+is used for the prediction</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Softmax</code> <code>classification</code> <code>probabilities</code> <code>for</code> <code>the</code> <code>given</code> <code>data</code> <code>batch</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def predict_batch(model, x_batch, dynamics, fast_init):
+    &#34;&#34;&#34;
+    Compute the softmax prediction probabilities for a given data batch.
+
+    Args:
+        model: EnergyBasedModel
+        x_batch: Batch of input tensors
+        dynamics: Dictionary containing the keyword arguments
+            for the relaxation dynamics on u
+        fast_init: Boolean to specify if fast feedforward initilization
+            is used for the prediction
+
+    Returns:
+        Softmax classification probabilities for the given data batch
+    &#34;&#34;&#34;
+    # Initialize the neural state variables
+    model.reset_state()
+
+    # Clamp the input to the test sample, and remove nudging from ouput
+    model.clamp_layer(0, x_batch.view(-1, model.dimensions[0]))
+    model.set_C_target(None)
+
+    # Generate the prediction
+    if fast_init:
+        model.fast_init()
+    else:
+        model.u_relax(**dynamics)
+
+    return torch.nn.functional.softmax(model.u[-1].detach(), dim=1)</code></pre>
+</details>
+</dd>
+<dt id="equilibrium-propagation.lib.train.test"><code class="name flex">
+<span>def <span class="ident">test</span></span>(<span>model, test_loader, dynamics, fast_init)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Evaluate prediction accuracy of an energy-based model on a given test set.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong></dt>
+<dd>EnergyBasedModel</dd>
+<dt><strong><code>test_loader</code></strong></dt>
+<dd>Dataloader containing the test dataset</dd>
+<dt><strong><code>dynamics</code></strong></dt>
+<dd>Dictionary containing the keyword arguments
+for the relaxation dynamics on u</dd>
+<dt><strong><code>fast_init</code></strong></dt>
+<dd>Boolean to specify if fast feedforward initilization
+is used for the prediction</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Test</code> <code>accuracy</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>Mean</code> <code>energy</code> of <code>the</code> <code>model</code> <code>per</code> <code>batch</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test(model, test_loader, dynamics, fast_init):
+    &#34;&#34;&#34;
+    Evaluate prediction accuracy of an energy-based model on a given test set.
+
+    Args:
+        model: EnergyBasedModel
+        test_loader: Dataloader containing the test dataset
+        dynamics: Dictionary containing the keyword arguments
+            for the relaxation dynamics on u
+        fast_init: Boolean to specify if fast feedforward initilization
+            is used for the prediction
+
+    Returns:
+        Test accuracy
+        Mean energy of the model per batch
+    &#34;&#34;&#34;
+    test_E, correct, total = 0.0, 0.0, 0.0
+
+    for x_batch, y_batch in test_loader:
+        # Prepare the new batch
+        x_batch, y_batch = x_batch.to(config.device), y_batch.to(config.device)
+
+        # Extract prediction as the output unit with the strongest activity
+        output = predict_batch(model, x_batch, dynamics, fast_init)
+        prediction = torch.argmax(output, 1)
+
+        with torch.no_grad():
+            # Compute test batch accuracy, energy and store number of seen batches
+            correct += float(torch.sum(prediction == y_batch.argmax(dim=1)))
+            test_E += float(torch.sum(model.E))
+            total += x_batch.size(0)
+
+    return correct/total, test_E/total</code></pre>
+</details>
+</dd>
+<dt id="equilibrium-propagation.lib.train.train"><code class="name flex">
+<span>def <span class="ident">train</span></span>(<span>model, train_loader, dynamics, w_optimizer, fast_init)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Use equilibrium propagation to train an energy-based model.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong></dt>
+<dd>EnergyBasedModel</dd>
+<dt><strong><code>train_loader</code></strong></dt>
+<dd>Dataloader containing the training dataset</dd>
+<dt><strong><code>dynamics</code></strong></dt>
+<dd>Dictionary containing the keyword arguments
+for the relaxation dynamics on u</dd>
+<dt><strong><code>w_optimizer</code></strong></dt>
+<dd>torch.optim.Optimizer object for the model parameters</dd>
+<dt><strong><code>fast_init</code></strong></dt>
+<dd>Boolean to specify if fast feedforward initilization
+is used for the prediction</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def train(model, train_loader, dynamics, w_optimizer, fast_init):
+    &#34;&#34;&#34;
+    Use equilibrium propagation to train an energy-based model.
+
+    Args:
+        model: EnergyBasedModel
+        train_loader: Dataloader containing the training dataset
+        dynamics: Dictionary containing the keyword arguments
+            for the relaxation dynamics on u
+        w_optimizer: torch.optim.Optimizer object for the model parameters
+        fast_init: Boolean to specify if fast feedforward initilization
+            is used for the prediction
+    &#34;&#34;&#34;
+    for batch_idx, (x_batch, y_batch) in enumerate(train_loader):
+        x_batch, y_batch = x_batch.to(config.device), y_batch.to(config.device)
+
+        # Reinitialize the neural state variables
+        model.reset_state()
+
+        # Clamp the input to the training sample
+        model.clamp_layer(0, x_batch.view(-1, model.dimensions[0]))
+
+        # Free phase
+        if fast_init:
+            # Skip the free phase using fast feed-forward initialization instead
+            model.fast_init()
+            free_grads = [torch.zeros_like(p) for p in model.parameters()]
+        else:
+            # Run free phase until settled to fixed point and collect the free phase derivates
+            model.set_C_target(None)
+            dE = model.u_relax(**dynamics)
+            free_grads = model.w_get_gradients()
+
+        # Run nudged phase until settled to fixed point and collect the nudged phase derivates
+        model.set_C_target(y_batch)
+        dE = model.u_relax(**dynamics)
+        nudged_grads = model.w_get_gradients()
+
+        # Optimize the parameters using the contrastive Hebbian style update
+        model.w_optimize(free_grads, nudged_grads, w_optimizer)
+
+        # Logging key statistics
+        if batch_idx % (len(train_loader)//10) == 0:
+
+            # Extract prediction as the output unit with the strongest activity
+            output = predict_batch(model, x_batch, dynamics, fast_init)
+            prediction = torch.argmax(output, 1)
+
+            # Log energy and batch accuracy
+            batch_acc = float(torch.sum(prediction == y_batch.argmax(dim=1))) / x_batch.size(0)
+            logging.info(&#39;{:.0f}%:\tE: {:.2f}\tdE {:.2f}\tbatch_acc {:.4f}&#39;.format(
+                100. * batch_idx / len(train_loader), torch.mean(model.E), dE, batch_acc))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="equilibrium-propagation.lib" href="index.html">equilibrium-propagation.lib</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="equilibrium-propagation.lib.train.predict_batch" href="#equilibrium-propagation.lib.train.predict_batch">predict_batch</a></code></li>
+<li><code><a title="equilibrium-propagation.lib.train.test" href="#equilibrium-propagation.lib.train.test">test</a></code></li>
+<li><code><a title="equilibrium-propagation.lib.train.train" href="#equilibrium-propagation.lib.train.train">train</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
