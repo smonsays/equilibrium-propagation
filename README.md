@@ -43,7 +43,7 @@ optional arguments:
 The default configurations for unspecified parameters are stored in `/etc/`.
 
 ## Documentation
-Documentation is auto-generated from docstrings using `pdoc3 . --html --force --output-dir docs`.
+[Documentation](https://smonsays.github.io/equilibrium-propagation/) is auto-generated from docstrings using `pdoc3 . --html --force --output-dir docs`.
 
 ## Results
 Two demo runs for the conditional Gaussian and the restricted Hopfield model using the default configuration can be found in the `/log/` directory. They can be reproduced with:
